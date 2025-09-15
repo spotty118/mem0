@@ -43,6 +43,7 @@ from mem0.utils.factory import (
 warnings.filterwarnings("ignore", category=DeprecationWarning, message=".*SwigPy.*")
 warnings.filterwarnings("ignore", category=DeprecationWarning, message=".*swigvarlink.*")
 
+
 def _build_filters_and_metadata(
     *,  # Enforce keyword-only arguments
     user_id: Optional[str] = None,
@@ -94,16 +95,22 @@ def _build_filters_and_metadata(
     session_ids_provided = []
 
     if user_id:
+        if not user_id.strip():
+            raise ValueError("user_id cannot be empty or whitespace-only")
         base_metadata_template["user_id"] = user_id
         effective_query_filters["user_id"] = user_id
         session_ids_provided.append("user_id")
 
     if agent_id:
+        if not agent_id.strip():
+            raise ValueError("agent_id cannot be empty or whitespace-only")
         base_metadata_template["agent_id"] = agent_id
         effective_query_filters["agent_id"] = agent_id
         session_ids_provided.append("agent_id")
 
     if run_id:
+        if not run_id.strip():
+            raise ValueError("run_id cannot be empty or whitespace-only")
         base_metadata_template["run_id"] = run_id
         effective_query_filters["run_id"] = run_id
         session_ids_provided.append("run_id")
@@ -157,9 +164,7 @@ class Memory(MemoryBase):
             provider_path = f"migrations_{self.config.vector_store.provider}"
             telemetry_config.path = os.path.join(mem0_dir, provider_path)
             os.makedirs(telemetry_config.path, exist_ok=True)
-        self._telemetry_vector_store = VectorStoreFactory.create(
-            self.config.vector_store.provider, telemetry_config
-        )
+        self._telemetry_vector_store = VectorStoreFactory.create(self.config.vector_store.provider, telemetry_config)
         capture_event("mem0.init", self, {"sync_type": "sync"})
 
     @classmethod

@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
+from typing import Any, Dict, List, Optional
 
 
 class MemoryBase(ABC):
     @abstractmethod
-    def get(self, memory_id):
+    def get(self, memory_id: str) -> Optional[Dict[str, Any]]:
         """
         Retrieve a memory by ID.
 
@@ -16,7 +17,7 @@ class MemoryBase(ABC):
         pass
 
     @abstractmethod
-    def get_all(self):
+    def get_all(self) -> List[Dict[str, Any]]:
         """
         List all memories.
 
@@ -26,7 +27,7 @@ class MemoryBase(ABC):
         pass
 
     @abstractmethod
-    def update(self, memory_id, data):
+    def update(self, memory_id: str, data: str) -> Dict[str, Any]:
         """
         Update a memory by ID.
 
@@ -40,7 +41,7 @@ class MemoryBase(ABC):
         pass
 
     @abstractmethod
-    def delete(self, memory_id):
+    def delete(self, memory_id: str) -> None:
         """
         Delete a memory by ID.
 
@@ -50,7 +51,7 @@ class MemoryBase(ABC):
         pass
 
     @abstractmethod
-    def history(self, memory_id):
+    def history(self, memory_id: str) -> List[Dict[str, Any]]:
         """
         Get the history of changes for a memory by ID.
 
