@@ -238,7 +238,7 @@ class GoogleMatchingEngine(VectorStoreBase):
                 return_full_datapoint=True,
             )
 
-            if not response or len(response) == 0 or len(response[0]) == 0:
+            if not response or not response[0]:
                 logger.debug("No results found")
                 return []
 

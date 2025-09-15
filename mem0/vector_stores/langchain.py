@@ -122,7 +122,7 @@ class Langchain(VectorStoreBase):
         Retrieve a vector by ID.
         """
         docs = self.client.get_by_ids([vector_id])
-        if docs and len(docs) > 0:
+        if docs:
             doc = docs[0]
             return self._parse_output([doc])[0]
         return None
