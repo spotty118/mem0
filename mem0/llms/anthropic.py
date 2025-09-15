@@ -79,9 +79,12 @@ class AnthropicLLM(LLMBase):
             }
         )
 
-        if tools:  # TODO: Remove tools if no issues found with new memory addition logic
+        if tools:
+            # Validate tools format and add to parameters
+            if not isinstance(tools, list):
+                raise ValueError("Tools parameter must be a list")
             params["tools"] = tools
-            params["tool_choice"] = tool_choice
+            params["tool_choice"] = tool_choice or "auto"
 
         response = self.client.messages.create(**params)
         return response.content[0].text
