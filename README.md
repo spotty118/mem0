@@ -151,6 +151,42 @@ For detailed integration steps, see the [Quickstart](https://docs.mem0.ai/quicks
 - Community: [Discord](https://mem0.dev/DiG) · [Twitter](https://x.com/mem0ai)
 - Contact: founders@mem0.ai
 
+## 🛠️ Troubleshooting
+
+### Common Issues
+
+**Installation Problems:**
+- Ensure Python 3.9+ is installed
+- For MacOS users with M1/M2 chips, use `pip install --no-binary :all: qdrant-client`
+- If you encounter dependency conflicts, try using a virtual environment
+
+**API Key Issues:**
+- Make sure your OpenAI API key is set: `export OPENAI_API_KEY="your-key-here"`
+- For other LLM providers, check the [LLM configuration docs](https://docs.mem0.ai/components/llms/overview)
+
+**Memory Storage Issues:**
+- Default storage uses SQLite - ensure write permissions in the working directory
+- For production, consider using external vector stores like Qdrant or Pinecone
+
+## 🤝 Contributing
+
+We welcome contributions! Here's how to get started:
+
+1. **Fork the repository** and clone it locally
+2. **Install development dependencies**: `pip install -e ".[dev,test]"`
+3. **Run tests**: `pytest tests/`
+4. **Format code**: `ruff format mem0/`
+5. **Submit a pull request** with a clear description
+
+### Development Guidelines
+
+- Follow the existing code style (enforced by Ruff)
+- Add tests for new features
+- Update documentation as needed
+- Check that all tests pass before submitting
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
+
 ## Citation
 
 We now have a paper you can cite:

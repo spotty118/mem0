@@ -89,9 +89,12 @@ class TogetherLLM(LLMBase):
         }
         if response_format:
             params["response_format"] = response_format
-        if tools:  # TODO: Remove tools if no issues found with new memory addition logic
+        if tools:
+            # Validate tools format and add to parameters
+            if not isinstance(tools, list):
+                raise ValueError("Tools parameter must be a list")
             params["tools"] = tools
-            params["tool_choice"] = tool_choice
+            params["tool_choice"] = tool_choice or "auto"
 
         response = self.client.chat.completions.create(**params)
         return self._parse_response(response, tools)

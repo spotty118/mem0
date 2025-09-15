@@ -143,15 +143,26 @@ class EmbedderFactory:
 
     @classmethod
     def create(cls, provider_name, config, vector_config: Optional[dict]):
+        if not provider_name:
+            raise ValueError("Provider name cannot be empty")
+        if not isinstance(provider_name, str):
+            raise TypeError("Provider name must be a string")
+
         if provider_name == "upstash_vector" and vector_config and vector_config.enable_embeddings:
             return MockEmbeddings()
         class_type = cls.provider_to_class.get(provider_name)
         if class_type:
-            embedder_instance = load_class(class_type)
-            base_config = BaseEmbedderConfig(**config)
-            return embedder_instance(base_config)
+            try:
+                embedder_instance = load_class(class_type)
+                base_config = BaseEmbedderConfig(**config)
+                return embedder_instance(base_config)
+            except Exception as e:
+                raise RuntimeError(f"Failed to create embedder for provider '{provider_name}': {e}")
         else:
-            raise ValueError(f"Unsupported Embedder provider: {provider_name}")
+            available_providers = list(cls.provider_to_class.keys())
+            raise ValueError(
+                f"Unsupported Embedder provider: {provider_name}. Available providers: {available_providers}"
+            )
 
 
 class VectorStoreFactory:
@@ -180,14 +191,27 @@ class VectorStoreFactory:
 
     @classmethod
     def create(cls, provider_name, config):
+        if not provider_name:
+            raise ValueError("Provider name cannot be empty")
+        if not isinstance(provider_name, str):
+            raise TypeError("Provider name must be a string")
+        if config is None:
+            raise ValueError("Config cannot be None")
+
         class_type = cls.provider_to_class.get(provider_name)
         if class_type:
-            if not isinstance(config, dict):
-                config = config.model_dump()
-            vector_store_instance = load_class(class_type)
-            return vector_store_instance(**config)
+            try:
+                if not isinstance(config, dict):
+                    config = config.model_dump()
+                vector_store_instance = load_class(class_type)
+                return vector_store_instance(**config)
+            except Exception as e:
+                raise RuntimeError(f"Failed to create vector store for provider '{provider_name}': {e}")
         else:
-            raise ValueError(f"Unsupported VectorStore provider: {provider_name}")
+            available_providers = list(cls.provider_to_class.keys())
+            raise ValueError(
+                f"Unsupported VectorStore provider: {provider_name}. Available providers: {available_providers}"
+            )
 
     @classmethod
     def reset(cls, instance):
@@ -216,3 +240,19 @@ class GraphStoreFactory:
         except (ImportError, AttributeError) as e:
             raise ImportError(f"Could not import MemoryGraph for provider '{provider_name}': {e}")
         return GraphClass(config)
+
+
+def get_supported_providers() -> Dict[str, list]:
+    """
+    Get all supported providers across different components.
+
+    Returns:
+        Dict[str, list]: Dictionary with component types as keys and
+                        lists of supported providers as values
+    """
+    return {
+        "llms": LlmFactory.get_supported_providers(),
+        "embedders": list(EmbedderFactory.provider_to_class.keys()),
+        "vector_stores": list(VectorStoreFactory.provider_to_class.keys()),
+        "graph_stores": list(GraphStoreFactory.provider_to_class.keys()),
+    }
