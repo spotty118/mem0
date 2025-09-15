@@ -1,4 +1,5 @@
 import json
+import logging
 from typing import Dict, List, Optional
 
 try:
@@ -9,6 +10,8 @@ except ImportError:
 from mem0.configs.llms.base import BaseLlmConfig
 from mem0.llms.base import LLMBase
 from mem0.memory.utils import extract_json
+
+logger = logging.getLogger(__name__)
 
 
 class LiteLLM(LLMBase):
@@ -37,10 +40,16 @@ class LiteLLM(LLMBase):
 
             if response.choices[0].message.tool_calls:
                 for tool_call in response.choices[0].message.tool_calls:
+                    try:
+                        arguments = json.loads(extract_json(tool_call.function.arguments))
+                    except (json.JSONDecodeError, ValueError) as e:
+                        logger.warning(f"Failed to parse tool call arguments: {e}")
+                        arguments = {}
+
                     processed_response["tool_calls"].append(
                         {
                             "name": tool_call.function.name,
-                            "arguments": json.loads(extract_json(tool_call.function.arguments)),
+                            "arguments": arguments,
                         }
                     )
 
