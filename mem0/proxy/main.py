@@ -11,11 +11,12 @@ import mem0
 try:
     import litellm
 except ImportError:
+    logger = logging.getLogger(__name__)
     try:
         subprocess.check_call([sys.executable, "-m", "pip", "install", "litellm"])
         import litellm
     except subprocess.CalledProcessError:
-        print("Failed to install 'litellm'. Please install it manually using 'pip install litellm'.")
+        logger.error("Failed to install 'litellm'. Please install it manually using 'pip install litellm'.")
         sys.exit(1)
 
 from mem0 import Memory, MemoryClient

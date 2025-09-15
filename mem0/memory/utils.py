@@ -1,14 +1,17 @@
 import hashlib
 import re
+from typing import Any, Dict, List, Optional
 
 from mem0.configs.prompts import FACT_RETRIEVAL_PROMPT
 
 
-def get_fact_retrieval_messages(message):
+def get_fact_retrieval_messages(message: str) -> tuple[str, str]:
+    """Get fact retrieval prompt and formatted message."""
     return FACT_RETRIEVAL_PROMPT, f"Input:\n{message}"
 
 
-def parse_messages(messages):
+def parse_messages(messages: List[Dict[str, str]]) -> str:
+    """Parse message list into a formatted string."""
     response = ""
     for msg in messages:
         if msg["role"] == "system":
@@ -20,7 +23,8 @@ def parse_messages(messages):
     return response
 
 
-def format_entities(entities):
+def format_entities(entities: Optional[List[Dict[str, str]]]) -> str:
+    """Format entity relationships into readable text."""
     if not entities:
         return ""
 
@@ -46,7 +50,7 @@ def remove_code_blocks(content: str) -> str:
     return match.group(1).strip() if match else content.strip()
 
 
-def extract_json(text):
+def extract_json(text: str) -> str:
     """
     Extracts JSON content from a string, removing enclosing triple backticks and optional 'json' tag if present.
     If no code block is found, returns the text as-is.
@@ -60,9 +64,17 @@ def extract_json(text):
     return json_str
 
 
-def get_image_description(image_obj, llm, vision_details):
+def get_image_description(image_obj: Any, llm: Any, vision_details: str) -> str:
     """
-    Get the description of the image
+    Get the description of the image using the provided LLM.
+
+    Args:
+        image_obj: Image object or URL
+        llm: Language model instance
+        vision_details: Vision detail level
+
+    Returns:
+        Description of the image
     """
 
     if isinstance(image_obj, str):
@@ -85,9 +97,19 @@ def get_image_description(image_obj, llm, vision_details):
     return response
 
 
-def parse_vision_messages(messages, llm=None, vision_details="auto"):
+def parse_vision_messages(
+    messages: List[Dict[str, Any]], llm: Optional[Any] = None, vision_details: str = "auto"
+) -> List[Dict[str, Any]]:
     """
-    Parse the vision messages from the messages
+    Parse the vision messages from the messages.
+
+    Args:
+        messages: List of message dictionaries
+        llm: Language model instance for image processing
+        vision_details: Detail level for vision processing
+
+    Returns:
+        Processed list of messages
     """
     returned_messages = []
     for msg in messages:
@@ -115,9 +137,15 @@ def parse_vision_messages(messages, llm=None, vision_details="auto"):
     return returned_messages
 
 
-def process_telemetry_filters(filters):
+def process_telemetry_filters(filters: Optional[Dict[str, str]]) -> Dict[str, str]:
     """
-    Process the telemetry filters
+    Process the telemetry filters by encoding sensitive IDs.
+
+    Args:
+        filters: Dictionary of filter parameters
+
+    Returns:
+        Dictionary with encoded filter values
     """
     if filters is None:
         return {}
