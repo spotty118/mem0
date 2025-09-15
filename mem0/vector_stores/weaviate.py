@@ -270,7 +270,6 @@ class Weaviate(VectorStoreBase):
             return_properties=["hash", "created_at", "updated_at", "user_id", "agent_id", "run_id", "data", "category"],
         )
         # results = {}
-        # print("reponse",response)
         # for obj in response.objects:
         payload = response.properties.copy()
         payload["id"] = str(response.uuid).split("'")[0]
@@ -290,7 +289,6 @@ class Weaviate(VectorStoreBase):
         """
         collections = self.client.collections.list_all()
         logger.debug(f"collections: {collections}")
-        print(f"collections: {collections}")
         return {"collections": [{"name": col.name} for col in collections]}
 
     def delete_col(self):

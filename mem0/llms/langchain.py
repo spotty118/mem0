@@ -62,4 +62,4 @@ class LangchainLLM(LLMBase):
             return ai_message.content
 
         except Exception as e:
-            raise Exception(f"Error generating response using langchain model: {str(e)}")
+            raise RuntimeError(f"Error generating response using langchain model: {str(e)}") from e
